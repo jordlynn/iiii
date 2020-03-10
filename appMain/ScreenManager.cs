@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Windows;
 
@@ -8,16 +9,16 @@ namespace appMain {
         [StructLayout(LayoutKind.Sequential)]
         public struct Rect
         {
-            public int left;
-            public int top;
-            public int right;
-            public int bottom;
+            public long left;
+            public long top;
+            public long right;
+            public long bottom;
         }
 
         [StructLayout(LayoutKind.Sequential)]
         public struct MonitorInfo
         {
-            public uint size;
+            public int size;
             public Rect monitor;
             public Rect work;
             public uint flags;
@@ -29,7 +30,7 @@ namespace appMain {
         [DllImport("user32.dll")]
         public static extern bool EnumDisplayMonitors(IntPtr hdc, IntPtr lprcClip, MonitorEnumDelegate lpfnEnum, int dwData);
         [DllImport("user32.dll")]
-        public static extern bool GetMonitorInfo(IntPtr hmon, ref MonitorInfo mi);
+        public static extern bool GetMonitorInfo(IntPtr hmon, [In, Out] MonitorInfo mi);
 
         public static bool MonitorProc(IntPtr hMonitor, IntPtr hdcMonitor, ref Rect lprcMonitor, IntPtr dwData)
         {
@@ -42,12 +43,21 @@ namespace appMain {
         {
             int monCount = 0;
             MonitorInfo mi = new MonitorInfo();
-            /*MonitorEnumDelegate MonitorProc = (IntPtr hDesktop, IntPtr hdc, ref Rect lprcMonitor, int d) =>
+            mi.size = Marshal.SizeOf(typeof(MonitorInfo));
+            List<MonitorInfo> monitors = new List<MonitorInfo>();
+
+            MonitorEnumDelegate MonitorProc = (IntPtr hDesktop, IntPtr hdc, ref Rect lprcMonitor, int d) =>
             {
                 monCount++;
-                GetMonitorInfo(hDesktop, ref mi);
+                if(GetMonitorInfo(hDesktop, mi))
+                {
+                    monitors.Add(mi);
+                    Console.WriteLine("name");
+                    Console.WriteLine(mi.work.bottom + "x" + mi.work.right);
+                }
+                return true;
             };
-
+            
             if (EnumDisplayMonitors(IntPtr.Zero, IntPtr.Zero, MonitorProc, 0))
                 Console.WriteLine("You have {0} monitors", monCount);
             else
@@ -55,8 +65,8 @@ namespace appMain {
 
 
             return EnumDisplayMonitors(IntPtr.Zero, IntPtr.Zero, MonitorProc, 0);
-            */
-            return true;
+            
+            //return true;
         }
     }
 }

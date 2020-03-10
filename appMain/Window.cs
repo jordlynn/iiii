@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,20 +9,29 @@ namespace appMain
 {
     class Window
     {
-        private String ApplicationName { get; set; }
-        private int TopCord { get; set; }
-        private int BotCord { get; set; }
-        private int LeftCord { get; set; }
-        private int RightCord { get; set; }
+        public string ApplicationName { get; set; }
+        public int TopCord { get; set; }
+        public int BotCord { get; set; }
+        public int LeftCord { get; set; }
+        public int RightCord { get; set; }
 
-        public Window(String applicationName, int top, int bottom, int left, int right)
+        public int Rank { get; set; }
+
+        public Process systemProcess { get; set; }
+
+        public Window LeftChild { get; set; }
+        public Window RightChild { get; set; }
+        public Window ParentWindow { get; set; }
+
+        public Window(String applicationName, int top, int bottom, int left, int right, int rank, Process process)
         {
-            this.TopCord = top;
-            this.BotCord = bottom;
-            this.LeftCord = left;
-            this.RightCord = right;
-
-            this.ApplicationName = applicationName;
+            TopCord = top;
+            BotCord = bottom;
+            LeftCord = left;
+            RightCord = right;
+            Rank = rank;
+            ApplicationName = applicationName;
+            systemProcess = process;
         }
 
     }

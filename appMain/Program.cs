@@ -24,58 +24,65 @@ namespace appMain
 
         static void Main(string[] args)
         {
-            while(true)
-            { 
-                Process[] processes = Process.GetProcesses();
+            Process[] processes = Process.GetProcesses();
+            List<Window> windowList = new List<Window>();
 
-                foreach (Process p in processes)
+            Console.WriteLine("iiii");
+            int tmpRank = 0;
+            foreach (Process p in processes)
+            {
+                if (p.MainWindowHandle != null && !String.IsNullOrEmpty(p.MainWindowTitle))
                 {
-                    if (p.MainWindowHandle != null && !String.IsNullOrEmpty(p.MainWindowTitle))
-                    {
-                        if (p.MainWindowTitle.Contains("Discord"))
-                        {
-                            WindowManager.GetWindowRect(p.MainWindowHandle, ref WindowManager.rct);
-                            Console.WriteLine();
-                            Console.WriteLine("left " + WindowManager.rct.left);
-                            Console.WriteLine("top " + WindowManager.rct.top);
-                            Console.WriteLine("right " + WindowManager.rct.right);
-                            Console.WriteLine("bottom " + WindowManager.rct.bottom);
-                            Console.WriteLine();
-                            WindowManager.MoveWindow(p.MainWindowHandle,
-                                        2573,
-                                        -218,
-                                        (3629 - 2573),
-                                        (622 + 218),
-                                        true);
+                    WindowManager.GetWindowRect(p.MainWindowHandle, ref WindowManager.rct);
+                    Window newWindow = new Window(
+                        p.ProcessName,
+                        WindowManager.rct.top,
+                        WindowManager.rct.bottom,
+                        WindowManager.rct.left,
+                        WindowManager.rct.right,
+                        tmpRank,
+                        p);
+                    tmpRank++;
 
-                        }
-
-                        if (p.MainWindowTitle.Contains("Vivaldi"))
-                        {
-                            WindowManager.GetWindowRect(p.MainWindowHandle, ref WindowManager.rct);
-                            Console.WriteLine();
-                            Console.WriteLine("left " + WindowManager.rct.left);
-                            Console.WriteLine("top " + WindowManager.rct.top);
-                            Console.WriteLine("right " + WindowManager.rct.right);
-                            Console.WriteLine("bottom " + WindowManager.rct.bottom);
-                            Console.WriteLine();
-                            WindowManager.MoveWindow(p.MainWindowHandle,
-                                        2573,
-                                        635,
-                                        (3629 - 2573),
-                                        (1643 - 635),
-                                        true);
-
-                        }
-
-                    }
+                    Console.WriteLine(p.MainWindowTitle);
+                    Console.WriteLine(WindowManager.rct.left);
+                    Console.WriteLine(WindowManager.rct.top);
+                    Console.WriteLine(WindowManager.rct.right);
+                    Console.WriteLine(WindowManager.rct.bottom);
+                    Console.WriteLine("==================================\n");
+                    windowList.Add(newWindow);
                 }
-                System.Threading.Thread.Sleep(1000);
+
             }
 
-            Console.WriteLine("before");
-            ScreenManager.procMonitor();
+            Console.WriteLine("Choose windows: ");
+            string windowName = Console.ReadLine();
+            List<Window> controlledWindowList = new List<Window>();
+            while (!windowName.Equals("z"))
+            {
+                Console.WriteLine("Choose windows: ");
+                windowName = Console.ReadLine();
+                controlledWindowList.Add(windowList.Find(window => window.ApplicationName.Contains(windowName)));
+            }
+            while (true)
+            {
+                foreach (Window controlledWindow in controlledWindowList)
+                {
+                    if (controlledWindow != null)
+                    {
+                        WindowManager.MoveWindow(controlledWindow.systemProcess.MainWindowHandle,
+                                            controlledWindow.LeftCord,
+                                            controlledWindow.TopCord,
+                                            (controlledWindow.RightCord - controlledWindow.LeftCord),
+                                            (controlledWindow.BotCord - controlledWindow.TopCord),
+                                            true);
 
+                    }
+                    System.Threading.Thread.Sleep(100);
+                }
+            }
+            Console.WriteLine("done!");
+            Console.WriteLine(controlledWindowList.Count);
         }
     }
 }
