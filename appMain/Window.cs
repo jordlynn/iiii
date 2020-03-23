@@ -9,7 +9,7 @@ namespace appMain
 {
     class Window
     {
-        public string ApplicationName { get; set; }
+        public String ApplicationName { get; set; }
         public int TopCord { get; set; }
         public int BotCord { get; set; }
         public int LeftCord { get; set; }

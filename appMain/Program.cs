@@ -45,10 +45,6 @@ namespace appMain
                     tmpRank++;
 
                     Console.WriteLine(p.MainWindowTitle);
-                    Console.WriteLine(WindowManager.rct.left);
-                    Console.WriteLine(WindowManager.rct.top);
-                    Console.WriteLine(WindowManager.rct.right);
-                    Console.WriteLine(WindowManager.rct.bottom);
                     Console.WriteLine("==================================\n");
                     windowList.Add(newWindow);
                 }
@@ -57,13 +53,8 @@ namespace appMain
 
             Console.WriteLine("Choose windows: ");
             string windowName = Console.ReadLine();
-            List<Window> controlledWindowList = new List<Window>();
-            while (!windowName.Equals("z"))
-            {
-                Console.WriteLine("Choose windows: ");
-                windowName = Console.ReadLine();
-                controlledWindowList.Add(windowList.Find(window => window.ApplicationName.Contains(windowName)));
-            }
+            List<Window> controlledWindowList = GatherControlledWindows(windowList);
+
             while (true)
             {
                 foreach (Window controlledWindow in controlledWindowList)
@@ -81,8 +72,28 @@ namespace appMain
                     System.Threading.Thread.Sleep(100);
                 }
             }
-            Console.WriteLine("done!");
-            Console.WriteLine(controlledWindowList.Count);
+        }
+
+        static List<Window> GatherControlledWindows(List<Window> windowList)
+        {
+            String windowName = "";
+            List<Window> tmpControlledWindowList = new List<Window>();
+
+            while (!windowName.Equals("z"))
+            {
+                Console.WriteLine("Choose windows: ");
+                windowName = Console.ReadLine();
+                Window tmpWindow = windowList.Find(window => window.ApplicationName.ToLower().Contains(windowName.ToLower())); // Specific Tracking
+              
+                if (tmpWindow != null)
+                {
+
+                    Console.Write("tracking: ");
+                    Console.WriteLine(tmpWindow.ApplicationName);
+                    tmpControlledWindowList.Add(tmpWindow);
+                }
+            }
+            return tmpControlledWindowList;
         }
     }
 }
