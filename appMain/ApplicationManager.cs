@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace appMain
 {
-    public class WindowManager
+    public class ApplicationManager
     {
         [StructLayout(LayoutKind.Sequential)]
         public struct RECT
